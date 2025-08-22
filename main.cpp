@@ -35,18 +35,90 @@ private:
     RoomType roomType;
     
 public:
-    Patient(int pid, string n, int a, string c);
     
-    void admitPatient(RoomType type);
-    void dischargePatient();
-    void addMedicalRecord(string record);
-    void requestTest(string testName);
-    string performTest();
-    void displayHistory();
+    Patient(int pid, string n, int a, string c) 
+        : id(pid), name(n), age(a), contact(c), isAdmitted(false), roomType(GENERAL_WARD) {}
     
-    int getId();
-    string getName();
-    bool getAdmissionStatus();
+    
+    void admitPatient(RoomType type) {
+        if (!isAdmitted) {
+            isAdmitted = true;
+            roomType = type;
+            string roomTypeStr;
+            switch(type) {
+                case GENERAL_WARD: roomTypeStr = "General Ward"; break;
+                case ICU: roomTypeStr = "ICU"; break;
+                case PRIVATE_ROOM: roomTypeStr = "Private Room"; break;
+                case SEMI_PRIVATE: roomTypeStr = "Semi-Private"; break;
+            }
+            addMedicalRecord("Patient admitted to " + roomTypeStr);
+        } else {
+            addMedicalRecord("Admission attempted while already admitted");
+        }
+    }
+    
+    
+    void dischargePatient() {
+        if (isAdmitted) {
+            isAdmitted = false;
+            addMedicalRecord("Patient discharged");
+        } else {
+            addMedicalRecord("Discharge attempted while not admitted");
+        }
+    }
+    
+    
+    void addMedicalRecord(string record) {
+        medicalHistory.push(record);
+    }
+    
+    
+    void requestTest(string testName) {
+        testQueue.push(testName);
+        addMedicalRecord("Test requested: " + testName);
+    }
+    
+    
+    string performTest() {
+        if (testQueue.empty()) {
+            addMedicalRecord("No tests pending");
+            return "No tests pending";
+        }
+        
+        string testName = testQueue.front();
+        testQueue.pop();
+        addMedicalRecord("Test performed: " + testName);
+        return testName;
+    }
+    
+    
+    void displayHistory() {
+        if (medicalHistory.empty()) {
+            cout << "No medical history available." << endl;
+            return;
+        }
+        
+        stack<string> tempStack;
+        
+        
+        while (!medicalHistory.empty()) {
+            tempStack.push(medicalHistory.top());
+            medicalHistory.pop();
+        }
+        
+        cout << "=== Medical History for Patient " << id << " ===" << endl;
+        while (!tempStack.empty()) {
+            cout << "- " << tempStack.top() << endl;
+            medicalHistory.push(tempStack.top());
+            tempStack.pop();
+        }
+        cout << "=================================" << endl;
+    }
+    
+    
+    int getId() { return id; }
+    string getName() { return name; }
+    bool getAdmissionStatus() { return isAdmitted; }
 };
 
 // ========== DOCTOR CLASS ========== //
