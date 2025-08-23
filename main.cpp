@@ -130,14 +130,48 @@ private:
     queue<int> appointmentQueue;
     
 public:
-    Doctor(int did, string n, Department d);
+    Doctor(int did, string n, Department d){
+        id = did;
+        name = n;
+        department = d;
+    }
     
-    void addAppointment(int patientId);
-    int seePatient();
+    void addAppointment(int patientId){
+        appointmentQueue.push(patientId);
+    }
+    int seePatient(){
+        if(appointmentQueue.size() == 0){
+            cout << "Empty list." << endl;
+            return -1;
+        }
+        int pid = appointmentQueue.front();    
+        appointmentQueue.pop();
+        return pid;
+    }
     
-    int getId();
-    string getName();
-    string getDepartment();
+    int getId(){
+        return id;
+    }
+    string getName(){
+        return name;
+    }
+    string getDepartment(){
+        switch (department)
+        {
+        case CARDIOLOGY:
+            return "Cardiology";
+        case NEUROLOGY:
+            return "Neurology";
+        case ORTHOPEDICS:
+            return "Orthopedics";
+        case PEDIATRICS:
+            return "Pediatrics";
+        case EMERGENCY:
+            return "Emergency";
+        case GENERAL:
+            return "General";
+        }
+    }
 };
 
 // ========== HOSPITAL CLASS ========== //
